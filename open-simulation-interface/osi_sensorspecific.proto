@@ -1,0 +1,30 @@
+syntax = "proto2";
+
+option optimize_for = SPEED;
+
+package osi;
+
+//
+// \brief Message encapsulates all data for detected objects that is specific to radar sensors.
+//
+message RadarSpecificObjectData
+{
+    // The radar cross section (RCS) of the detected object. Unit: [dB sqm].
+    optional double rcs = 1;
+}
+
+//
+// \brief Message encapsulates all data for detected objects that is specific to lidar sensors.
+//
+message LidarSpecificObjectData
+{
+    // currently no fields.
+}
+
+//
+// \brief Message encapsulates all data for detected objects that is specific to camera sensors.
+//
+message CameraSpecificObjectData
+{
+    // currently no fields.
+}

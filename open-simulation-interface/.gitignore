@@ -1,0 +1,18 @@
+build/
+dist/
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Makefile
+cmake_install.cmake
+install_manifest.txt
+CTestTestfile.cmake
+# setup.py:
+build
+*.egg-info
+osi
+.project
+doc/html
+doc/latex
+osi_version.proto
+version.py
