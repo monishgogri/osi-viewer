@@ -23,7 +23,7 @@
 #include "imessagesource.h"
 #include "types.h"
 
-
+//! Osireader class
 class OsiReader: public QObject, public IMessageSource
 {
     Q_OBJECT
@@ -88,4 +88,3 @@ class OsiReader: public QObject, public IMessageSource
         DataType defaultDatatype_ = DataType::Groundtruth;
         const QString defaultHeaderPrifix_ = "Header_";
 };
-
