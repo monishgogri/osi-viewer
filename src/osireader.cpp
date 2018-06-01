@@ -40,6 +40,8 @@ OsiReader::OsiReader(int* deltaDelay,
 *    The entire Function is inside am if block, whose value depends on errMsg,
 *    which we get from SetupConnection (from this class).
 *    Calls the function ReadHeader() to create vector stamp2Offset_.
+*    In this function the program checks for the Headerfile (.txth), but in the interface there is no option to create the same.
+*    This means OSI viewer will always create a Headerfile on its own.
 */
 void
 OsiReader::StartReadFile(const QString& osiFileName, const DataType dataType)
@@ -62,6 +64,8 @@ OsiReader::StartReadFile(const QString& osiFileName, const DataType dataType)
             }
             else
             {
+                //XXX
+                std::cout << "Program comes here, in StartReadFile() after successfully reading Header\n" << '\n';
                 QFileInfo fPath(fInfo.path());
 
                 if(fPath.isDir() && fPath.isWritable())
@@ -89,10 +93,8 @@ OsiReader::StartReadFile(const QString& osiFileName, const DataType dataType)
                 emit UpdateSliderRange(sliderRange);
 
                 defaultDatatype_ = dataType;
-                QtConcurrent::run(this, &OsiReader::SendMessageLoop);
-                //XXX
-                std::std::cout << "Program comes here, in StartReadFile() after successfully reading Header\n" << '\n';
-            }
+                QtConcurrent::run(this, &OsiReader::SendMessageLoop);     https://doc.qt.io/qt-5.9/qtconcurrent-index.html
+              }
         }
         else
         {
@@ -128,13 +130,19 @@ OsiReader::StopReadFile()
     }
 }
 
-//! \brief Function based on QObject
+//! \brief Function which manages the Slider. (Seems buggy)
+
+/**
+*    Is for when the slider value is changed to the desired position,
+*    when the playback is paused. (If playback is not paused does nothing)
+*    iterMutex_ is an oject of the class QMutex.
+*/
 void
 OsiReader::SliderValueChanged(int newValue)
 {
     iterMutex_.lock();
     iterChanged_ = true;
-    iterMutex_.unlock();
+    iterMutex_.unlock();    //http://doc.qt.io/qt-5/qmutex.html#unlock
 
     uint64_t nanoTimeStamp = (int64_t)newValue * 1000000;
     for(newIterStamp_ = stamp2Offset_.begin();
@@ -193,7 +201,7 @@ OsiReader::SliderValueChanged(int newValue)
         inputFile.close();
     }
 }
-
+// XXX Dont understand!
 uint64_t
 OsiReader::GetTimeStampInNanoSecond(osi::SensorData& osiSD)
 {
@@ -325,6 +333,8 @@ OsiReader::SaveHeader()
     outputFile.close();
 }
 
+//! \brief This function shows the output of the file in the viewer area and loops it endlessly. (starts in a new thread)
+
 void
 OsiReader::SendMessageLoop()
 {
@@ -438,6 +448,8 @@ OsiReader::SendMessageLoop()
 
     isReadTerminated_ = true;
 }
+
+//XXX what is ZeroMQ??
 
 void
 OsiReader::ZMQSendOutMessage(const std::string& message)
