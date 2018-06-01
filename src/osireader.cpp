@@ -7,7 +7,7 @@
 #include <iostream>
 
 #include "osireader.h"
-//! Constructor to the Osireader class.
+//! \brief Constructor to the Osireader class.
 /**
 Initializes Osifile IMessageSource and QObject variables.
 */
@@ -34,7 +34,13 @@ OsiReader::OsiReader(int* deltaDelay,
     , zmqPublisher_(zmqContext_, ZMQ_PUB)
 {
 }
-//! Basic function to read file and check if file is okay
+//! \brief Basic function to read file and check if file is okay
+
+/**
+*    The entire Function is inside am if block, whose value depends on errMsg,
+*    which we get from SetupConnection (from this class).
+*    Calls the function ReadHeader() to create vector stamp2Offset_.
+*/
 void
 OsiReader::StartReadFile(const QString& osiFileName, const DataType dataType)
 {
@@ -84,6 +90,8 @@ OsiReader::StartReadFile(const QString& osiFileName, const DataType dataType)
 
                 defaultDatatype_ = dataType;
                 QtConcurrent::run(this, &OsiReader::SendMessageLoop);
+                //XXX
+                std::std::cout << "Program comes here, in StartReadFile() after successfully reading Header\n" << '\n';
             }
         }
         else
@@ -98,7 +106,7 @@ OsiReader::StartReadFile(const QString& osiFileName, const DataType dataType)
 }
 
 
-//! Terminates the file reading
+//! \brief Terminates the file reading (also internet remote files)
 void
 OsiReader::StopReadFile()
 {
@@ -120,7 +128,7 @@ OsiReader::StopReadFile()
     }
 }
 
-//! Function based on QObject
+//! \brief Function based on QObject
 void
 OsiReader::SliderValueChanged(int newValue)
 {
@@ -196,7 +204,11 @@ OsiReader::GetTimeStampInNanoSecond(osi::SensorData& osiSD)
     return timeStamp;
 }
 
-//! Reads the Input file for timeStamp and Offset and stores in vector stamp2Offset_
+//! \brief Reads the Input file for timeStamp and Offset and stores in vector stamp2Offset_
+
+/**
+*    Gets called by StartReadFile (in the beginning).
+*/
 void
 OsiReader::ReadHeader()
 {
@@ -220,11 +232,11 @@ OsiReader::ReadHeader()
 }
 
 
-//! Reads the contents of the given input File
+//! \brief Reads the contents of the given input File
 /**
-This function reads the file line by line with the offset values from the stamp2Offset_ vector.
-The function will show error if the stamp2Offset_ vector is empty or osi::osiSD.ParseFromString() cannot make sense of the data in the file.
-Otherwise it will save the strings in a new file with the help of function SaveHeader().
+*    This function reads the file line by line with the offset values from the stamp2Offset_ vector.
+*    The function will show error if the stamp2Offset_ vector is empty or osi::osiSD.ParseFromString() cannot make sense of the data in the file.
+*    Otherwise it will save the strings in a new file with the help of function SaveHeader().
 */
 bool
 OsiReader::CreateHeader(QString& errorMsg)
@@ -297,7 +309,7 @@ OsiReader::CreateHeader(QString& errorMsg)
     return success;
 }
 
-//! Saves the data from the stamp2Offset_	vector (from given input file) to a new file.
+//! \brief Saves the data from the stamp2Offset_	vector (from given input file) to a new file.
 void
 OsiReader::SaveHeader()
 {
@@ -437,6 +449,8 @@ OsiReader::ZMQSendOutMessage(const std::string& message)
         zmqPublisher_.send(zmqMessage);
     }
 }
+
+//! \brief Opens or Closes the socket connection from the Port number inputted based on the 'enable' parameter passed.
 
 QString
 OsiReader::SetupConnection(bool enable)
